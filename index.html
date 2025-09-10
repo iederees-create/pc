@@ -2,67 +2,66 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RAVERSUS — Office Video Loop</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RAVERSUS — Office Loop</title>
 <style>
-  :root{ --accent:#FFD700; --bg:#000; --fg:#fff; --muted:#9aa0a6; }
+  :root{--accent:#FFD700;--bg:#000;--fg:#fff;--muted:#9aa0a6}
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-  #app{min-height:100vh;display:flex;flex-direction:column}
-  .header{position:sticky;top:0;z-index:20;display:flex;gap:12px;align-items:center;padding:12px 16px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px)}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Inter,Roboto,Arial,sans-serif}
+  .wrap{min-height:100vh;display:flex;flex-direction:column}
+  .header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px)}
   .logo{font-weight:900;letter-spacing:.35em}
   .header .right{margin-left:auto;display:flex;gap:8px}
   .btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
   .btn:hover{background:rgba(255,255,255,.2)}
   .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:12px}
-  .player{position:relative;width:min(1400px,100%);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.6)}
-  .player video{width:100%;height:100%;object-fit:cover;display:block}
-  .player.contain video{object-fit:contain;background:#000}
-  .spinner{position:absolute;inset:0;display:grid;place-items:center;background:#000;font-weight:600;letter-spacing:.1em}
-  .spinner.hide{display:none}
-  .meta{position:absolute;top:10px;left:12px;font-size:12px;color:#ddd;background:rgba(0,0,0,.35);padding:6px 10px;border-radius:8px}
+  .box{position:relative;width:min(1400px,100%);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.6)}
+  video{width:100%;height:100%;object-fit:cover;display:block}
+  .box.contain video{object-fit:contain;background:#000}
+  .overlay{position:absolute;inset:0;display:grid;place-items:center;background:#000}
+  .overlay.hide{display:none}
+  .status{position:absolute;top:10px;left:12px;font-size:12px;color:#ddd;background:rgba(0,0,0,.35);padding:6px 10px;border-radius:8px}
   .hint{position:absolute;top:10px;right:12px;font-size:12px;color:#ddd;background:rgba(0,0,0,.35);padding:6px 10px;border-radius:8px}
   .controls{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:10px 12px;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0))}
+  .tap{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;padding:14px 18px;border-radius:12px;font-weight:800;cursor:pointer}
   .time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
   .progress{flex:1;height:6px;background:rgba(255,255,255,.15);border-radius:999px;position:relative;cursor:pointer}
-  .progress>.bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:999px}
-  .footer{padding:10px 16px;text-align:center;color:#777}
+  .bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:999px}
 </style>
 </head>
 <body>
-<div id="app">
+<div class="wrap">
   <div class="header">
     <div class="logo">RAVERSUS</div>
     <div class="right">
       <button class="btn" id="fsBtn">Fullscreen</button>
       <button class="btn" id="fitBtn">Fit: Cover</button>
+      <button class="btn" id="muteBtn">Unmute</button>
+      <button class="btn" id="playBtn">Pause</button>
     </div>
   </div>
 
   <div class="stage">
-    <div class="player" id="playerBox">
-      <div class="spinner" id="spinner">Loading…</div>
-      <video id="player" autoplay muted playsinline preload="auto"></video>
-
-      <div class="meta" id="meta"></div>
-      <div class="hint">Shortcuts: Space ⏯ · F ⛶ · M 🔇 · ←/→ ◀▶</div>
-
+    <div class="box" id="box">
+      <div class="overlay" id="overlay">
+        <div>
+          <div style="text-align:center;margin-bottom:12px;font-weight:700;letter-spacing:.1em">Loading…</div>
+          <button class="tap" id="tapBtn" style="display:none">Tap to Play</button>
+        </div>
+      </div>
+      <video id="vid" autoplay muted playsinline preload="auto"></video>
+      <div class="status" id="status"></div>
+      <div class="hint">Keys: Space ⏯ · F ⛶ · M 🔇 · ←/→ ◀▶</div>
       <div class="controls">
-        <button class="btn" id="prevBtn">Prev</button>
-        <button class="btn" id="playBtn">Pause</button>
-        <button class="btn" id="nextBtn">Next</button>
-        <button class="btn" id="muteBtn">Unmute</button>
         <div class="time" id="time">00:00 / 00:00</div>
         <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
       </div>
     </div>
   </div>
-
-  <div class="footer">Place videos in <code>/videos</code>. Loops through all files continuously (locked at 1.0× speed).</div>
 </div>
 
 <script>
-/* ========= Playlist: update filenames/paths if needed ========= */
+/*** === CONFIG: update filenames if needed (case-sensitive) === ***/
 const SOURCES = [
   'videos/compressed_1.mp4',
   'videos/raversusvideo2_p0_clip_000_compressed.mp4',
@@ -76,124 +75,150 @@ const SOURCES = [
   'videos/raversusvideo_part_002.mp4'
 ];
 
-/* ========= Elements ========= */
-const player = document.getElementById('player');
-const spinner = document.getElementById('spinner');
-const playerBox = document.getElementById('playerBox');
-const meta = document.getElementById('meta');
-const playBtn = document.getElementById('playBtn');
-const muteBtn = document.getElementById('muteBtn');
-const nextBtn = document.getElementById('nextBtn');
-const prevBtn = document.getElementById('prevBtn');
-const fitBtn = document.getElementById('fitBtn');
+const ATTEMPT_TIMEOUT_MS = 7000; // wait up to 7s per file before skipping
+const RATE = 1.0;                // lock normal speed
+
+/*** === Elements === ***/
+const vid = document.getElementById('vid');
+const box = document.getElementById('box');
+const overlay = document.getElementById('overlay');
+const tapBtn = document.getElementById('tapBtn');
+const statusLbl = document.getElementById('status');
 const fsBtn = document.getElementById('fsBtn');
+const fitBtn = document.getElementById('fitBtn');
+const muteBtn = document.getElementById('muteBtn');
+const playBtn = document.getElementById('playBtn');
 const progress = document.getElementById('progress');
 const bar = document.getElementById('bar');
 const timeLbl = document.getElementById('time');
 
 let idx = 0;
-const LOCK_RATE = 1.0; // ← enforce normal speed
 
-/* ========= Rate lock helpers ========= */
-function enforceRate() {
-  if (player.defaultPlaybackRate !== LOCK_RATE) player.defaultPlaybackRate = LOCK_RATE;
-  if (player.playbackRate !== LOCK_RATE) player.playbackRate = LOCK_RATE;
-  // preserve pitch wherever supported
-  if ('preservesPitch' in player) player.preservesPitch = true;
-  if ('mozPreservesPitch' in player) player.mozPreservesPitch = true;
-  if ('webkitPreservesPitch' in player) player.webkitPreservesPitch = true;
-}
-
-/* ========= Core playback ========= */
-function setSource(i){
-  idx = (i + SOURCES.length) % SOURCES.length;
-  const src = SOURCES[idx];
-  player.src = src;
-  enforceRate();
-  player.load();
-  spinner.classList.remove('hide');
-  player.play().catch(()=>{});  // autoplay requires muted
-  updateMeta();
+/*** === Helpers === ***/
+function fmtTime(s){ if(isNaN(s)) return '00:00'; const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
+function setStatus(text){ statusLbl.textContent = text; }
+function enforceRate(){
+  if(vid.defaultPlaybackRate !== RATE) vid.defaultPlaybackRate = RATE;
+  if(vid.playbackRate !== RATE) vid.playbackRate = RATE;
+  if('preservesPitch' in vid) vid.preservesPitch = true;
+  if('mozPreservesPitch' in vid) vid.mozPreservesPitch = true;
+  if('webkitPreservesPitch' in vid) vid.webkitPreservesPitch = true;
 }
 
-function updateMeta(){
-  meta.textContent = `${(idx+1)}/${SOURCES.length} — ${SOURCES[idx].split('/').pop()} — 1.0×`;
+/*** === Source loader with timeout (prevents rapid flipping) === ***/
+function trySource(src){
+  return new Promise(resolve=>{
+    let settled = false;
+    const to = setTimeout(()=>{ if(settled) return; settled=true; cleanup(); resolve(false); }, ATTEMPT_TIMEOUT_MS);
+
+    function onLoaded(){ if(settled) return; settled=true; cleanup(); resolve(true); }
+    function onError(){ if(settled) return; settled=true; cleanup(); resolve(false); }
+
+    function cleanup(){
+      clearTimeout(to);
+      vid.removeEventListener('loadedmetadata', onLoaded);
+      vid.removeEventListener('error', onError);
+    }
+
+    setStatus(`Trying ${(idx+1)}/${SOURCES.length}: ${src.split('/').pop()}`);
+    enforceRate();
+    vid.src = src;
+    vid.load(); // begin fetching
+    vid.addEventListener('loadedmetadata', onLoaded, {once:true});
+    vid.addEventListener('error', onError, {once:true});
+  });
 }
 
-/* ========= Events ========= */
-player.addEventListener('loadedmetadata', () => { enforceRate(); });
-player.addEventListener('loadeddata', () => { spinner.classList.add('hide'); enforceRate(); });
-player.addEventListener('ratechange', () => { enforceRate(); }); // snap back if changed
-player.addEventListener('visibilitychange', () => { enforceRate(); });
-player.addEventListener('ended', next);
-
-/* ========= Controls ========= */
-function playPause(){
-  if (player.paused){ player.play(); playBtn.textContent = 'Pause'; }
-  else { player.pause(); playBtn.textContent = 'Play'; }
-}
-function muteUnmute(){
-  player.muted = !player.muted;
-  muteBtn.textContent = player.muted ? 'Unmute' : 'Mute';
-}
-function next(){ setSource(idx + 1); }
-function prev(){ setSource(idx - 1); }
-function toggleFit(){
-  const isContain = playerBox.classList.toggle('contain');
-  fitBtn.textContent = 'Fit: ' + (isContain ? 'Contain' : 'Cover');
-}
-function toggleFullscreen(){
-  const el = playerBox;
-  if (!document.fullscreenElement){
-    (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen).call(el);
-  }else{
-    (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen).call(document);
+async function loadAndPlayFrom(i){
+  // Attempt each source once until one loads
+  for(let k=0; k<SOURCES.length; k++){
+    idx = (i + k) % SOURCES.length;
+    const src = SOURCES[idx];
+    const ok = await trySource(src);
+    if(ok){
+      overlay.classList.add('hide');
+      setStatus(`Playing ${(idx+1)}/${SOURCES.length}: ${src.split('/').pop()} @ 1.0×`);
+      enforceRate();
+      const p = vid.play();
+      if (p && typeof p.then === 'function'){
+        p.catch(()=> {
+          // Autoplay blocked: ask user to start
+          tapBtn.style.display = 'inline-block';
+          overlay.classList.remove('hide');
+          setStatus('Autoplay blocked — tap to start');
+        });
+      }
+      return;
+    }
   }
+  // None loaded
+  overlay.classList.remove('hide');
+  tapBtn.style.display = 'none';
+  setStatus('No playable videos found. Check paths/codecs.');
 }
 
-/* ========= Progress & time ========= */
-function formatTime(s){
-  if (isNaN(s)) return '00:00';
-  const m = Math.floor(s/60).toString().padStart(2,'0');
-  const ss = Math.floor(s%60).toString().padStart(2,'0');
-  return `${m}:${ss}`;
-}
-player.addEventListener('timeupdate', () => {
-  if (player.duration){
-    const pct = (player.currentTime / player.duration) * 100;
-    bar.style.width = pct + '%';
-    timeLbl.textContent = `${formatTime(player.currentTime)} / ${formatTime(player.duration)}`;
+/*** === Loop to next on end === ***/
+vid.addEventListener('ended', ()=> loadAndPlayFrom(idx+1));
+
+/*** === Progress & time === ***/
+vid.addEventListener('timeupdate', ()=>{
+  if(vid.duration){
+    bar.style.width = (vid.currentTime/vid.duration)*100 + '%';
+    timeLbl.textContent = `${fmtTime(vid.currentTime)} / ${fmtTime(vid.duration)}`;
   }
 });
 progress.addEventListener('click', (e)=>{
-  const rect = progress.getBoundingClientRect();
-  const pct = (e.clientX - rect.left) / rect.width;
-  player.currentTime = pct * (player.duration || 0);
+  const r = progress.getBoundingClientRect();
+  const pct = (e.clientX - r.left) / r.width;
+  vid.currentTime = pct * (vid.duration || 0);
 });
 
-/* ========= Wire up buttons & keys ========= */
-playBtn.addEventListener('click', playPause);
-muteBtn.addEventListener('click', muteUnmute);
-nextBtn.addEventListener('click', next);
-prevBtn.addEventListener('click', prev);
-fitBtn.addEventListener('click', toggleFit);
-fsBtn.addEventListener('click', toggleFullscreen);
-
-document.addEventListener('keydown', (e)=>{
-  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+/*** === UI controls === ***/
+document.addEventListener('keydown', e=>{
+  if(['INPUT','TEXTAREA'].includes((e.target||{}).tagName)) return;
   switch(e.key.toLowerCase()){
-    case ' ': e.preventDefault(); playPause(); break;
+    case ' ': e.preventDefault(); togglePlay(); break;
     case 'f': toggleFullscreen(); break;
-    case 'm': muteUnmute(); break;
-    case 'arrowright': next(); break;
-    case 'arrowleft': prev(); break;
+    case 'm': toggleMute(); break;
+    case 'arrowright': loadAndPlayFrom(idx+1); break;
+    case 'arrowleft': loadAndPlayFrom(idx-1); break;
   }
 });
 
-/* ========= Start playback (normal speed enforced) ========= */
-player.muted = true;           // allow autoplay
-enforceRate();                 // lock to 1.0×
-setSource(0);                  // load first video
+function toggleFullscreen(){
+  const el = box;
+  if (!document.fullscreenElement){
+    (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen).call(el);
+  }else{
+    (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen).call(document);
+  }
+}
+function toggleFit(){
+  const c = box.classList.toggle('contain');
+  fitBtn.textContent = 'Fit: ' + (c ? 'Contain' : 'Cover');
+}
+function toggleMute(){
+  vid.muted = !vid.muted;
+  muteBtn.textContent = vid.muted ? 'Unmute' : 'Mute';
+}
+function togglePlay(){
+  if(vid.paused){ vid.play(); playBtn.textContent='Pause'; }
+  else { vid.pause(); playBtn.textContent='Play'; }
+}
+
+fsBtn.addEventListener('click', toggleFullscreen);
+fitBtn.addEventListener('click', toggleFit);
+muteBtn.addEventListener('click', toggleMute);
+playBtn.addEventListener('click', togglePlay);
+tapBtn.addEventListener('click', ()=>{ enforceRate(); vid.play(); overlay.classList.add('hide'); });
+
+/*** === Keep speed at 1.0× no matter what === ***/
+vid.addEventListener('ratechange', enforceRate);
+vid.addEventListener('loadedmetadata', enforceRate);
+
+/*** === Kickoff === ***/
+vid.muted = true; // allow autoplay
+loadAndPlayFrom(0);
 </script>
 </body>
 </html>
