@@ -1,6 +1,6 @@
 // List of all video sources
 const videoSources = [
-  'videos/compressed_1.mp4',
+  'https://github.com/iederees-create/pc/blob/2feaa434edc181d0c5b7040118d8062aa2238b17/video/compressed_1.mp4',
   'videos/raversusvideo2_p0_clip_000_compressed.mp4',
   'videos/raversusvideo2_p0_clip_000_compressed_compressed.mp4',
   'videos/raversusvideo2_p0_clip_001_compressed.mp4',
